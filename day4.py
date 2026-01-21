@@ -3,7 +3,7 @@ import re
 
 puzzle_input = get_data(day=4, year=2024)
 
-QUESTION_PART = 1
+QUESTION_PART = 2
 
 test_input = """MMMSXXMASM
 MSAMXMSMSA
@@ -77,7 +77,7 @@ def check_for_xmas(row: int, column: int, matrix: list[list[str]]) -> int:
             xmas += 1
     return xmas
 
-def find_xmas(matrix: list[list[str]]) -> tuple[int, list[tuple[int, int]]]:
+def find_xmas(matrix: list[list[str]]) -> int:
     count = 0
     found = []
     for row in range(0, len(matrix)):
@@ -86,20 +86,21 @@ def find_xmas(matrix: list[list[str]]) -> tuple[int, list[tuple[int, int]]]:
                 count += check_for_xmas(row, column, matrix)
             elif matrix[row][column] == "A" and QUESTION_PART == 2:
                 count += check_for_x_mas(row, column, matrix)
-    return count, found
+    return count
 
 
 def check_for_x_mas(row: int, column: int, matrix: list[list[str]]) -> int:
     x_mas=0
-    #working from a located A, checking directions
-
-
-
-
+    #working from a located middle A
+    if row >= 1 and row <= len(matrix) - 2 and column >= 1 and column <= len(matrix[0]) - 2:
+        word1 = matrix[row-1][column-1] + matrix[row][column] + matrix[row+1][column+1]
+        word2 = matrix[row+1][column-1] + matrix[row][column] + matrix[row-1][column+1]
+        if (word1 == "MAS" or word1 == "SAM") and (word2 == "MAS" or word2 == "SAM"):
+            x_mas += 1
     return x_mas
 
 
 
-matrix = input_into_matrix(test_input)
-count, found = find_xmas(matrix)
+matrix = input_into_matrix(puzzle_input)
+count = find_xmas(matrix)
 print("Answer: ", count)
