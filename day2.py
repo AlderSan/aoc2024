@@ -3,6 +3,8 @@ from numpy import diff
 
 puzzle_input = get_data(day=2, year=2024)
 
+QUESTION_PART = 2
+
 test_input = """7 6 4 2 1
 1 2 7 8 9
 9 7 6 2 1
@@ -10,9 +12,6 @@ test_input = """7 6 4 2 1
 8 6 4 4 1
 1 3 6 7 9"""
 
-#row is report
-#valid if: levels are either all increasing or all decreasing AND
-#difference between levels is 1 <= diff <= 3
 
 def input_into_reports(input: str) -> list[list[int]]:
     split_lines = input.split("\n")
@@ -21,13 +20,27 @@ def input_into_reports(input: str) -> list[list[int]]:
         reports.append(list(map(int, line.split())))
     return reports
 
-
 def is_valid_report(report: list[int]) -> bool:
     if report == sorted(report) or report == sorted(report, reverse=True):
         rdiff = diff(report)
-        return all([abs(n) >= 1 and abs(n) <= 3 for n in rdiff])
+        check = all([abs(n) >= 1 and abs(n) <= 3 for n in rdiff])
+        if QUESTION_PART == 2 and not check:
+            return is_valid_report_2(report)
+        else:
+            return check
     else:
+        if QUESTION_PART == 2:
+            return is_valid_report_2(report)
         return False
+        
+def is_valid_report_2(report:list[int]) -> bool:
+    check = []
+    for index in range(0, len(report)):
+        temp_report = report[0:index] + report[index+1:]
+        if temp_report == sorted(temp_report) or temp_report == sorted(temp_report, reverse=True):
+            r2diff = diff(temp_report)
+            check.append(all([abs(n) >= 1 and abs(n) <= 3 for n in r2diff]))
+    return any(check)
 
 def check_all_reports(list_of_reports: list[list[int]]) -> list[tuple[int, bool]]:
     results = []
@@ -45,7 +58,4 @@ def count_valids(list_of_results: list[tuple[int, bool]]) -> int:
 reports = input_into_reports(puzzle_input)
 valid_reports = check_all_reports(reports)
 valid_count = count_valids(valid_reports)
-print(len(puzzle_input.split("\n")))
-print("Valid reports:", *valid_reports, sep="\n")
 print("Count: ", valid_count)
-print(puzzle_input.split("\n")[594])
